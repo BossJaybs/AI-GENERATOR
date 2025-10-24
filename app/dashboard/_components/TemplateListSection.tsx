@@ -23,23 +23,22 @@ export interface FORM{
 function TemplateListSection({userSearchInput}:any) {
   const [templateList, setTemplateList] = useState(Templates);
   useEffect(()=>{
-    if(userSearchInput)
-      {
-        const filterData = Templates.filter(item=>
-          item.name.toLocaleLowerCase().includes(userSearchInput.toLocaleLowerCase())
-        );
-        setTemplateList(filterData)
-      }else{
-        setTemplateList(Templates)
-      }
-      
-  })
+    if (userSearchInput && typeof userSearchInput === 'string' && userSearchInput.trim().length > 0) {
+      const q = userSearchInput.toLowerCase();
+      const filterData = Templates.filter(item =>
+        item.name.toLowerCase().includes(q)
+      );
+      setTemplateList(filterData);
+    } else {
+      setTemplateList(Templates);
+    }
+  }, [userSearchInput]);
     
   return (
     
     <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 p-10'>
       {templateList.map((item:TEMPLATE, index:number)=>(
-        <TemplateCard {...item}/>
+        <TemplateCard key={item.slug} {...item}/>
       ))}
     </div>
 
