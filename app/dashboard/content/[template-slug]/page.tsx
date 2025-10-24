@@ -1,5 +1,5 @@
 'use client'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, use } from 'react'
 import FormSection from '../_component/FormSection'
 import OutputSection from '../_component/OutputSection'
 import { TEMPLATE } from '../../_components/TemplateListSection'
@@ -7,19 +7,20 @@ import Templates from '@/app/(data)/Templates'
 import { ArrowLeft} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { chatSession } from '@/utils/AiModel'
+import { chatSession, sendWithRetry } from '@/utils/AiModel'
 import { db } from '@/utils/db'
 import { AiOutput } from '@/utils/schema'
 import { useUser } from '@clerk/nextjs'
 import { TotalUsageContext } from '@/app/(context)/TotalUsageContext'
 interface PROPS{
-  params:{
+  params: Promise<{
     'template-slug':string
-  }
+  }>
 }
 
 function CreateNewContent(props:PROPS) {
-  const selectedtemplate:TEMPLATE|undefined = Templates?.find((item)=>item.slug == props.params['template-slug'])
+  const params = use(props.params);
+  const selectedtemplate:TEMPLATE|undefined = Templates?.find((item)=>item.slug == params['template-slug'])
   const [loading, setLoading] = useState(false);
   const [aiOutput, setAiOutput] = useState<string>('');
   const {user} = useUser();
@@ -30,18 +31,30 @@ function CreateNewContent(props:PROPS) {
     if (totalUsage >= 20000) {
       alert('Free usage limit reached. Please upgrade to continue.');
       return;
-    }else{
+    } else {
+      setLoading(true);
+      try {
+        const selectedPrompt = selectedtemplate?.aiPrompt || '';
+        const finalPrompt = `${selectedPrompt}\n\nUser Input JSON:\n${JSON.stringify(formData)}`;
 
-    
-    setLoading(true);
-    const selectedPrompt = selectedtemplate?.aiPrompt;
-    const finalPrompt = JSON.stringify(formData) + ", " + selectedPrompt;
-  
-    const result = await chatSession.sendMessage(finalPrompt);
-    console.log(result.response.text());
-    setAiOutput(result?.response.text());
-    await SaveInDb(JSON.stringify(formData), selectedtemplate?.slug,result?.response.text())
-    setLoading(false);
+        const text = await sendWithRetry(finalPrompt, {
+          maxRetries: 3,
+          baseDelayMs: 800,
+          timeoutMs: 30000,
+          useFallback: true,
+        });
+
+        console.log(text);
+        setAiOutput(text);
+        if (text) {
+          await SaveInDb(JSON.stringify(formData), selectedtemplate?.slug, text);
+        }
+      } catch (err: any) {
+        console.error('AI generate error:', err);
+        alert(err?.message || 'The AI service is temporarily unavailable. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 

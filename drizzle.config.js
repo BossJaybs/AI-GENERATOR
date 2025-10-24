@@ -1,3 +1,5 @@
+import 'dotenv/config';
+
 /** @type { import("drizzle-kit").Config } */
 export default {
     schema: "./utils/schema.tsx",

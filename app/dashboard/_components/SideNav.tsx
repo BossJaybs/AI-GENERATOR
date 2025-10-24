@@ -1,6 +1,5 @@
 "use client"
 import React, { useEffect } from 'react'
-import Image from 'next/image'
 import { Home, LucideFileClock, Settings, WalletCards } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
@@ -37,8 +36,9 @@ function  SideNav() {
   return (
     <div className='h-screen relative p-5 shadow-sm border bg-white'>
       <div className='p-2 flex justify-center'>
-        <Link href = {'/dashboard/'}><Image src={'/logo.svg'} alt='logo' width={160} height={100}/></Link>
-      
+        <Link href = {'/dashboard/'}>
+          <h1 className='text-xl font-bold text-center text-primary'>GROUP 2 AI CONTENT GENERATOR</h1>
+        </Link>
       </div>
       <hr className='my-6 border'/>
       <div className='mt-3'>
@@ -47,7 +47,7 @@ function  SideNav() {
       <h2 className='text-lg'>Profile</h2>
       </div>
         {MenuList.map((menu, index)=>(
-          <Link href = {menu.path}>
+          <Link href = {menu.path} key={index}>
           <div className={`flex gap-2 mb-2 p-3
           hover:bg-primary hover:text-white rounded-lg cursor-pointer items-center ${path==menu.path&&'bg-primary text-white'}`}>
             <menu.icon className='h-6 w-6'/>
