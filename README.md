@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # AI Content Generation 
 
 ![AI Content Generation Dashboard](public/dashboard.png)
