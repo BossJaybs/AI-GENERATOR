@@ -1,5 +1,5 @@
 
-# AI Content Generation 
+# AI Content Generator 
 
 ![Alt Text](ai.png)
 
