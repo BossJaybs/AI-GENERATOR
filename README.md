@@ -1,7 +1,7 @@
 
 # AI Content Generation 
 
-![AI Content Generation Dashboard](public/dashboard.png)
+![AI Content Generation Dashboard](ai.png)
 
 This project  is an AI Content Generation Dashboard that enables users to generate AI-powered content and track their generation history. It leverages the Google Gemini API for content creation, with user authentication handled via Clerk, and data stored in a NEON PostgreSQL database using Drizzle ORM.
 ## Tech Stack
