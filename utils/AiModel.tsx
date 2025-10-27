@@ -31,7 +31,7 @@ function sleep(ms: number) {
   return new Promise((res) => setTimeout(res, ms));
 }
 
-function isRetryableError(err) {
+function isRetryableError(err: any) {
   const message = String(err?.message || err);
   // Retry on typical transient statuses
   return /(429|500|502|503|504)/.test(message) || /fetch|network|timeout/i.test(message);
