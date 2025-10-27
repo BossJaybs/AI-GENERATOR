@@ -37,7 +37,7 @@ function isRetryableError(err: any) {
   return /(429|500|502|503|504)/.test(message) || /fetch|network|timeout/i.test(message);
 }
 
-export async function sendWithRetry(prompt, options = {}) {
+export async function sendWithRetry(prompt: string, options = {}) {
   const {
     maxRetries = 3,
     baseDelayMs = 750,
