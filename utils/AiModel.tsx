@@ -18,7 +18,7 @@ const generationConfig = {
   responseMimeType: "text/plain",
 };
 
-function getModel(modelName) {
+function getModel(modelName: string) {
   return genAI.getGenerativeModel({ model: modelName });
 }
 
