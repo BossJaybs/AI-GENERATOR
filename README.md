@@ -3,8 +3,7 @@
 
 ![AI Content Generation Dashboard](public/dashboard.png)
 
-This project is an AI Content Generation Dashboard built using Next.js, Drizzle ORM, NEON PostgreSQL, Tailwind CSS, and TypeScript (tsx). The dashboard allows users to generate AI content and view their history of generated content.
-
+This project  is an AI Content Generation Dashboard that enables users to generate AI-powered content and track their generation history. It leverages the Google Gemini API for content creation, with user authentication handled via Clerk, and data stored in a NEON PostgreSQL database using Drizzle ORM.
 ## Tech Stack
 
 - **Next.js**: A React framework for production.
@@ -12,6 +11,16 @@ This project is an AI Content Generation Dashboard built using Next.js, Drizzle 
 - **NEON PostgreSQL**: A serverless PostgreSQL database.
 - **Tailwind CSS**: A utility-first CSS framework for styling.
 - **TypeScript**: A superset of JavaScript with static types.
+
+- Frontend Framework: Next.js (React-based)
+Styling: Tailwind CSS
+Language: TypeScript
+Database: NEON PostgreSQL (serverless)
+ORM: Drizzle ORM
+Authentication: Clerk
+AI Integration: Google Gemini API
+UI Components: Radix UI (icons and slots)
+Additional Libraries: Lucide React (icons), date-fns (date handling), clsx and tailwind-merge (utility classes), @toast-ui/react-editor (rich text editor)
 
 ## Features
 
@@ -78,6 +87,5 @@ This project is an AI Content Generation Dashboard built using Next.js, Drizzle 
 The database schema is defined in \`utils/schema.tsx\`
 
 
-=======
-# AI-CONTENT-GENERATOR
->>>>>>> 9fd7b64a03f51e2cdc6fe774aafe62d0fa3a8abb
+
+
