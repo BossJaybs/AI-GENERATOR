@@ -29,7 +29,7 @@ This project is an AI Content Generation Dashboard built using Next.js, Drizzle 
 - PostgreSQL
 
 ### Installation
-iop
+
 1. **Clone the Repository**
     \`\`\`bash
     git clone https://github.com/Varunv003/Ai-content_generator-nextjs
