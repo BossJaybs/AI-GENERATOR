@@ -35,8 +35,8 @@ This project  is an AI Content Generation Dashboard that enables users to genera
 
 1. **Clone the Repository**
     \`\`\`bash
-    git clone https://github.com/Varunv003/Ai-content_generator-nextjs
-    cd ai-content-generation-dashboard
+    git clone https://github.com/BossJaybs/AI-GENERATOR
+    cd ai-generator
     \`\`\`
 
 2. **Install Dependencies**
