@@ -45,7 +45,7 @@ export async function sendWithRetry(prompt: string, options: { maxRetries?: numb
     useFallback = true,
   } = options;
 
-  async function attemptSend(modelName) {
+  async function attemptSend(modelName: string) {
     // Per-call timeout using AbortController
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(new Error("Request timeout")), timeoutMs);
