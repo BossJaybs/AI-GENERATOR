@@ -11,16 +11,10 @@ This project  is an AI Content Generation Dashboard that enables users to genera
 - **NEON PostgreSQL**: A serverless PostgreSQL database.
 - **Tailwind CSS**: A utility-first CSS framework for styling.
 - **TypeScript**: A superset of JavaScript with static types.
+- **Clerk**: Authentication
+- **Google Gemini API**: AI Integration
+- **Radix UI (Icons and slots)**: UI Components
 
-- Frontend Framework: Next.js (React-based)
-Styling: Tailwind CSS
-Language: TypeScript
-Database: NEON PostgreSQL (serverless)
-ORM: Drizzle ORM
-Authentication: Clerk
-AI Integration: Google Gemini API
-UI Components: Radix UI (icons and slots)
-Additional Libraries: Lucide React (icons), date-fns (date handling), clsx and tailwind-merge (utility classes), @toast-ui/react-editor (rich text editor)
 
 ## Features
 
