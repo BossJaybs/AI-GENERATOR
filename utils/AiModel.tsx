@@ -27,7 +27,7 @@ export const chatSession = getModel(PRIMARY_MODEL).startChat({
   history: [],
 });
 
-function sleep(ms) {
+function sleep(ms: number) {
   return new Promise((res) => setTimeout(res, ms));
 }
 
