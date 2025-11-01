@@ -4,7 +4,7 @@ export default [
         desc:'Ai tool that generate blog title based on your blog outlines or description',
         category:'Blog',
         icon:'https://cdn-icons-png.flaticon.com/128/4186/4186534.png',
-        aiPrompt:'Give me 5 blog titles based on the niche, and the outlines of the blog provided, also give the result in rich text editor format',
+        aiPrompt:'Give me 5 blog titles based on the niche, and the outlines of the blog provided, also give the result in markdown format',
         slug:'generate-blog-title',
         form:[
             {
@@ -26,7 +26,7 @@ export default [
         desc: 'AI tool that generates a detailed blog outline based on the provided topic or niche.',
         category:'Blog',
         icon: 'https://cdn-icons-png.flaticon.com/128/2593/2593549.png',
-        aiPrompt: 'Generate a detailed blog outline based on the niche and topic provided. Provide the result in rich text editor format.',
+        aiPrompt: 'Generate a detailed blog outline based on the niche and topic provided. Provide the result in markdown format.',
         slug: 'generate-blog-outline',
         form: [
             {
@@ -48,7 +48,7 @@ export default [
         desc: 'AI tool that generates content based on the provided outline or topic.',
         category:'Blog',
         icon: 'https://cdn-icons-png.flaticon.com/128/9079/9079294.png',
-        aiPrompt: 'Generate detailed content based on the provided outline or topic. Provide the result in rich text editor format.',
+        aiPrompt: 'Generate detailed content based on the provided outline or topic. Provide the result in markdown format.',
         slug: 'generate-content',
         form: [
             {
@@ -70,7 +70,7 @@ export default [
         desc: 'AI tool that generates YouTube tags based on the provided video information.',
         category:'Youtube',
         icon: 'https://cdn-icons-png.flaticon.com/128/10884/10884883.png',
-        aiPrompt: 'Generate a list of YouTube tags based on the provided video information. Provide the result in rich text editor format.',
+        aiPrompt: 'Generate a list of YouTube tags based on the provided video information. Provide the result in markdown format.',
         slug: 'generate-youtube-tags',
         form: [
             {
@@ -92,7 +92,7 @@ export default [
         desc: 'AI tool that generates Instagram tags based on the provided information.',
         category:'Instagram',
         icon: 'https://cdn-icons-png.flaticon.com/128/174/174855.png',
-        aiPrompt: 'Generate a list of Instagram tags based on the provided information. Provide the result in rich text editor format.',
+        aiPrompt: 'Generate a list of Instagram tags based on the provided information. Provide the result in markdown format.',
         slug: 'generate-instagram-tags',
         form: [
             {
@@ -114,7 +114,7 @@ export default [
         desc: 'AI tool that generates Instagram captions based on the provided information.',
         category:'Instagram',
         icon: 'https://cdn-icons-png.flaticon.com/128/174/174855.png',
-        aiPrompt: 'Generate an engaging Instagram caption based on the provided information. Provide the result in rich text editor format.',
+        aiPrompt: 'Generate an engaging Instagram caption based on the provided information. Provide the result in markdown format.',
         slug: 'generate-instagram-caption',
         form: [
             {
@@ -136,7 +136,7 @@ export default [
         desc: 'AI tool that generates product descriptions based on the provided information.',
         category:'Others',
         icon: 'https://cdn-icons-png.flaticon.com/128/4129/4129571.png',
-        aiPrompt: 'Generate a detailed product description based on the provided information. Provide the result in rich text editor format.',
+        aiPrompt: 'Generate a detailed product description based on the provided information. Provide the result in markdown format.',
         slug: 'generate-product-description',
         form: [
             {
