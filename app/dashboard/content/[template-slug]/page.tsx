@@ -12,6 +12,41 @@ import { db } from '@/utils/db'
 import { AiOutput } from '@/utils/schema'
 import { useUser } from '@clerk/nextjs'
 import { TotalUsageContext } from '@/app/(context)/TotalUsageContext'
+
+function stripRtf(text: string): string {
+  // Remove RTF formatting if present
+  if (text.startsWith('{\\rtf')) {
+    // Find the last closing brace
+    let braceCount = 0;
+    let endIndex = -1;
+    for (let i = 0; i < text.length; i++) {
+      if (text[i] === '{') braceCount++;
+      else if (text[i] === '}') {
+        braceCount--;
+        if (braceCount === 0) {
+          endIndex = i;
+          break;
+        }
+      }
+    }
+    if (endIndex !== -1) {
+      // Extract content after the RTF header
+      const rtfContent = text.substring(text.indexOf('\\viewkind'), endIndex);
+      // Simple RTF to text conversion - remove RTF control words
+      return rtfContent
+        .replace(/\\[a-z]+\d*\s?/g, '') // Remove RTF control words
+        .replace(/\\\n/g, '\n') // Handle line breaks
+        .replace(/\\par/g, '\n') // Paragraph breaks
+        .replace(/\\tab/g, '\t') // Tabs
+        .replace(/\{\\fonttbl[^}]*\}/g, '') // Remove font table
+        .replace(/\{\\colortbl[^}]*\}/g, '') // Remove color table
+        .replace(/\\[a-z]+/g, '') // Remove remaining control words
+        .replace(/\n\s*\n/g, '\n\n') // Clean up extra newlines
+        .trim();
+    }
+  }
+  return text;
+}
 interface PROPS{
   params: Promise<{
     'template-slug':string
@@ -44,10 +79,11 @@ function CreateNewContent(props:PROPS) {
           useFallback: true,
         });
 
-        console.log(text);
-        setAiOutput(text);
-        if (text) {
-          await SaveInDb(JSON.stringify(formData), selectedtemplate?.slug, text);
+        const cleanedText = stripRtf(text);
+        console.log(cleanedText);
+        setAiOutput(cleanedText);
+        if (cleanedText) {
+          await SaveInDb(JSON.stringify(formData), selectedtemplate?.slug, cleanedText);
         }
       } catch (err: any) {
         console.error('AI generate error:', err);
