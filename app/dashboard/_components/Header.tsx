@@ -20,10 +20,6 @@ function Header({ onToggleSidebar }: HeaderProps) {
         <Search/>
         <input type="text" placeholder='Search....' className='outline-none' />
       </div> */}
-      <hr className='my-6 border'/>
-      <div className='flex gap-10 items-center'>
-        <h2 className='bg-primary p-5 rounded-full text-md text-white px-7'> Join Member Ship just for $9.99/Month </h2>
-      </div>
 
     </div>
   )
