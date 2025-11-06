@@ -1,12 +1,16 @@
 "use client"
 import React, { useEffect } from 'react'
-import { Home, LucideFileClock, Settings, WalletCards } from 'lucide-react'
+import { Home, LucideFileClock, Settings, WalletCards, X } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import UsageTrack from './UsageTrack'
 import { UserButton } from '@clerk/nextjs'
 
-function  SideNav() {
+interface SideNavProps {
+  onClose?: () => void;
+}
+
+function  SideNav({ onClose }: SideNavProps) {
   const MenuList = [
     {
       name: 'Home', 
@@ -35,10 +39,19 @@ function  SideNav() {
   },[]);
   return (
     <div className='h-screen relative p-5 shadow-sm border bg-white'>
-      <div className='p-2 flex justify-center'>
-        <Link href = {'/dashboard/'}>
+      <div className='p-2 flex justify-between items-center'>
+        <Link href = {'/dashboard/'} className='flex-1'>
           <h1 className='text-xl font-bold text-center text-primary'>GROUP 2 AI CONTENT GENERATOR</h1>
         </Link>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className='md:hidden p-2 rounded-md hover:bg-gray-100'
+            aria-label="Close sidebar"
+          >
+            <X className='h-6 w-6' />
+          </button>
+        )}
       </div>
       <hr className='my-6 border'/>
       <div className='mt-3'>
