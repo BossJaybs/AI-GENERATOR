@@ -30,11 +30,8 @@ function UsageTrack() {
   }
 
   const getTotalUsage=(result:HISTORY[])=>{
-    let total:number=0;
-    result.forEach(element => {
-      total = total+Number(element.aiResponse?.length);
-      setTotalUsage(total)
-    });
+    let total:number = result.length * 300; // Each AI response costs 300 credits
+    setTotalUsage(total);
     console.log(total);
   }
   return (
