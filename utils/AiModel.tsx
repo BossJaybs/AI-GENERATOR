@@ -39,9 +39,9 @@ function isRetryableError(err: any) {
 
 export async function sendWithRetry(prompt: string, options: { maxRetries?: number; baseDelayMs?: number; timeoutMs?: number; useFallback?: boolean } = {}) {
   const {
-    maxRetries = 3,
-    baseDelayMs = 750,
-    timeoutMs = 30000,
+    maxRetries = 5,
+    baseDelayMs = 1000,
+    timeoutMs = 60000,
     useFallback = true,
   } = options;
 
@@ -68,6 +68,7 @@ export async function sendWithRetry(prompt: string, options: { maxRetries?: numb
     } catch (err) {
       lastErr = err;
       if (attempt === maxRetries || !isRetryableError(err)) break;
+      console.log(`Retry attempt ${attempt + 1} failed:`, err);
       const jitter = Math.random() * 0.4 + 0.8; // 0.8x - 1.2x
       const delay = Math.round(baseDelayMs * Math.pow(2, attempt) * jitter);
       await sleep(delay);
@@ -82,13 +83,17 @@ export async function sendWithRetry(prompt: string, options: { maxRetries?: numb
       } catch (err) {
         lastErr = err;
         if (!isRetryableError(err)) break;
+        console.log(`Fallback retry attempt ${attempt + 1} failed:`, err);
         await sleep(baseDelayMs);
       }
     }
   }
 
+  const isRateLimit = String(lastErr?.message || lastErr).includes('429');
   const friendly = new Error(
-    "The AI service is temporarily overloaded. Please try again in a moment."
+    isRateLimit
+      ? "Rate limit exceeded. Please try again later."
+      : "The AI service is temporarily overloaded. Please try again in a moment."
   );
   friendly.cause = lastErr;
   throw friendly;
