@@ -60,7 +60,7 @@ export async function sendWithRetry(prompt: string, options: { maxRetries?: numb
     }
   }
 
-  let lastErr;
+  let lastErr: any;
   // Try primary with retries
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
