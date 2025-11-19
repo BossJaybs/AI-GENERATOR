@@ -3,12 +3,14 @@ const {
   HarmCategory,
   HarmBlockThreshold,
 } = require("@google/generative-ai");
+const OpenAI = require('openai');
 
 const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey);
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 const PRIMARY_MODEL = process.env.NEXT_PUBLIC_PRIMARY_MODEL || "gemini-2.0-flash-001";
-const FALLBACK_MODEL = process.env.NEXT_PUBLIC_FALLBACK_MODEL || "gemini-1.5-pro";
+const FALLBACK_MODEL = process.env.NEXT_PUBLIC_FALLBACK_MODEL || "gpt-3.5-turbo";
 
 const generationConfig = {
   temperature: 1,
@@ -50,11 +52,24 @@ export async function sendWithRetry(prompt: string, options: { maxRetries?: numb
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(new Error("Request timeout")), timeoutMs);
     try {
-      const session = getModel(modelName).startChat({ generationConfig, history: [] });
-      const res = await session.sendMessage(prompt, { signal: controller.signal });
-      const text = res?.response?.text?.() ?? "";
-      if (!text) throw new Error("Empty response from model");
-      return text;
+      if (modelName.startsWith('gpt-')) {
+        // OpenAI
+        const res = await openai.chat.completions.create({
+          model: modelName,
+          messages: [{ role: 'user', content: prompt }],
+          max_tokens: 8192,
+        }, { signal: controller.signal });
+        const text = res.choices[0]?.message?.content ?? "";
+        if (!text) throw new Error("Empty response from model");
+        return text;
+      } else {
+        // Gemini
+        const session = getModel(modelName).startChat({ generationConfig, history: [] });
+        const res = await session.sendMessage(prompt, { signal: controller.signal });
+        const text = res?.response?.text?.() ?? "";
+        if (!text) throw new Error("Empty response from model");
+        return text;
+      }
     } finally {
       clearTimeout(timer);
     }
@@ -93,7 +108,7 @@ export async function sendWithRetry(prompt: string, options: { maxRetries?: numb
   const isQuotaExceeded = String(lastErr?.message || lastErr).toLowerCase().includes('quota');
   const friendly = new Error(
     isQuotaExceeded
-      ? "Quota exceeded. Please check your Google AI billing and try again."
+      ? "Quota exceeded. Please check your AI provider billing and try again."
       : isRateLimit
       ? "Rate limit exceeded. Please try again later."
       : "The AI service is temporarily overloaded. Please try again in a moment."
