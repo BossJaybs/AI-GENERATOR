@@ -3,7 +3,7 @@ import React, { useContext, useState, use } from 'react'
 import FormSection from '../_component/FormSection'
 import OutputSection from '../_component/OutputSection'
 import { TEMPLATE } from '../../_components/TemplateListSection'
-import Templates from '@/app/(data)/Templates'
+// import Templates from '@/app/(data)/Templates'
 import { ArrowLeft} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
@@ -19,7 +19,8 @@ interface PROPS{
 
 function CreateNewContent(props:PROPS) {
   const params = use(props.params);
-  const selectedtemplate:TEMPLATE|undefined = Templates?.find((item)=>item.slug == params['template-slug'])
+  // const selectedtemplate:TEMPLATE|undefined = Templates?.find((item)=>item.slug == params['template-slug'])
+  const selectedtemplate = undefined as TEMPLATE | undefined
   const [loading, setLoading] = useState(false);
   const [aiOutput, setAiOutput] = useState<string>('');
   const {user} = useUser();
