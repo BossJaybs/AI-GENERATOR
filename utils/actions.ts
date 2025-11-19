@@ -41,6 +41,7 @@ function stripRtf(text: string): string {
 
 export async function generateAIContent(formData: any, selectedPrompt: string, slug: string, createdBy: string) {
   try {
+    console.log('Actions: Starting generateAIContent for slug:', slug);
     const finalPrompt = `${selectedPrompt}\n\nUser Input JSON:\n${JSON.stringify(formData)}`;
 
     const text = await sendWithRetry(finalPrompt, {
@@ -51,7 +52,9 @@ export async function generateAIContent(formData: any, selectedPrompt: string, s
     });
 
     const cleanedText = stripRtf(text);
+    console.log('Actions: AI response received, length:', cleanedText.length);
 
+    console.log('Actions: Attempting db insert');
     const result = await db.insert(AiOutput).values({
       formData: JSON.stringify(formData),
       templateSlug: slug,
@@ -59,6 +62,7 @@ export async function generateAIContent(formData: any, selectedPrompt: string, s
       createdBy: createdBy,
       createdAt: new Date().toISOString(),
     });
+    console.log('Actions: DB insert successful');
 
     return cleanedText;
   } catch (error) {
