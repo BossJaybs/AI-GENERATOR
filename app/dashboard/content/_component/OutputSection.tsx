@@ -1,5 +1,7 @@
+'use client'
 import React from 'react'
 import MDEditor from '@uiw/react-md-editor';
+import '@uiw/react-md-editor/markdown-editor.css';
 import { Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
