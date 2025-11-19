@@ -3,6 +3,7 @@
 import { sendWithRetry } from '@/utils/AiModel'
 import { db } from '@/utils/db'
 import { AiOutput } from '@/utils/schema'
+import Templates from '@/app/(data)/Templates'
 
 function stripRtf(text: string): string {
   // Remove RTF formatting if present
@@ -40,6 +41,11 @@ function stripRtf(text: string): string {
 }
 
 export async function generateAIContent(formData: any, selectedPrompt: string, slug: string, createdBy: string) {
+  // Validate template slug
+  if (!Templates.some(template => template.slug === slug)) {
+    throw new Error("Invalid template slug: The selected template does not exist.");
+  }
+
   try {
     console.log('Actions: Starting generateAIContent for slug:', slug);
     const finalPrompt = `${selectedPrompt}\n\nUser Input JSON:\n${JSON.stringify(formData)}`;
