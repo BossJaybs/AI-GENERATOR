@@ -1,6 +1,5 @@
-import React, { useEffect, useRef } from 'react'
-import '@toast-ui/editor/dist/toastui-editor.css';
-import { Editor } from '@toast-ui/react-editor';
+import React from 'react'
+import MDEditor from '@uiw/react-md-editor';
 import { Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -10,12 +9,6 @@ interface PROPS{
 }
 
 function OutputSection({aiOutput}:PROPS) {
-  const editorRef:any = useRef();
-
-  useEffect(()=>{
-    const editorInstance = editorRef.current.getInstance();
-    editorInstance.setMarkdown(aiOutput);
-  },[aiOutput])
   
   return (
     <div className='bg-white shadow-lg border'>
@@ -25,13 +18,10 @@ function OutputSection({aiOutput}:PROPS) {
         onClick={()=>navigator.clipboard.writeText(aiOutput)}><Copy className='w-4 h-4'/> Copy</Button>
 
       </div>
-      <Editor
-        ref = {editorRef}
-        initialValue="Generated Content will Appear here"
+      <MDEditor
+        value={aiOutput}
+        preview="preview"
         height="600px"
-        initialEditType="markdown"
-        useCommandShortcut={true}
-        onChange = {()=>console.log(editorRef.current.getInstance().getMarkdown())}
       />
     </div>
   )
