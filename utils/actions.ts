@@ -44,8 +44,8 @@ export async function generateAIContent(formData: any, selectedPrompt: string, s
     console.log('Actions: Starting generateAIContent for slug:', slug);
     const finalPrompt = `${selectedPrompt}\n\nUser Input JSON:\n${JSON.stringify(formData)}`;
 
-    // Temporarily disabled AI call for testing - using dummy response
-    const text = "Dummy AI response for testing purposes. Form submission and database save should work.";
+    console.log('Actions: Calling AI model with prompt length:', finalPrompt.length);
+    const text = await sendWithRetry(finalPrompt);
 
     const cleanedText = stripRtf(text);
     console.log('Actions: AI response received, length:', cleanedText.length);
@@ -61,8 +61,30 @@ export async function generateAIContent(formData: any, selectedPrompt: string, s
     console.log('Actions: DB insert successful');
 
     return cleanedText;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in generateAIContent:", error);
-    throw error;
+
+    // Detailed error analysis
+    const errorMessage = String(error?.message || error).toLowerCase();
+    let detailedMessage = "An error occurred during AI content generation.";
+
+    if (errorMessage.includes("api key") || errorMessage.includes("not set")) {
+      detailedMessage = "API key configuration error: Please check that NEXT_PUBLIC_GEMINI_API_KEY and OPENAI_API_KEY are properly set in your environment variables.";
+    } else if (errorMessage.includes("quota")) {
+      detailedMessage = "AI service quota exceeded: Your API usage limit has been reached. Please check your billing or usage limits with your AI provider.";
+    } else if (errorMessage.includes("rate limit") || errorMessage.includes("429")) {
+      detailedMessage = "Rate limit exceeded: Too many requests to the AI service. Please wait a moment and try again.";
+    } else if (errorMessage.includes("network") || errorMessage.includes("fetch") || errorMessage.includes("timeout")) {
+      detailedMessage = "Network or connection error: Unable to reach the AI service. Please check your internet connection and try again.";
+    } else if (errorMessage.includes("empty response")) {
+      detailedMessage = "AI service returned an empty response: The model may be experiencing issues. Please try again.";
+    } else if (errorMessage.includes("overloaded") || errorMessage.includes("500") || errorMessage.includes("502") || errorMessage.includes("503") || errorMessage.includes("504")) {
+      detailedMessage = "AI service temporarily unavailable: The service is overloaded or experiencing issues. Please try again later.";
+    }
+
+    console.error("Detailed error:", detailedMessage);
+    const enhancedError = new Error(detailedMessage);
+    enhancedError.cause = error;
+    throw enhancedError;
   }
 }
