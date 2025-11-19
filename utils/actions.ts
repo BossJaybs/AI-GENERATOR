@@ -40,24 +40,29 @@ function stripRtf(text: string): string {
 }
 
 export async function generateAIContent(formData: any, selectedPrompt: string, slug: string, createdBy: string) {
-  const finalPrompt = `${selectedPrompt}\n\nUser Input JSON:\n${JSON.stringify(formData)}`;
+  try {
+    const finalPrompt = `${selectedPrompt}\n\nUser Input JSON:\n${JSON.stringify(formData)}`;
 
-  const text = await sendWithRetry(finalPrompt, {
-    maxRetries: 3,
-    baseDelayMs: 800,
-    timeoutMs: 30000,
-    useFallback: true,
-  });
+    const text = await sendWithRetry(finalPrompt, {
+      maxRetries: 3,
+      baseDelayMs: 800,
+      timeoutMs: 30000,
+      useFallback: true,
+    });
 
-  const cleanedText = stripRtf(text);
+    const cleanedText = stripRtf(text);
 
-  const result = await db.insert(AiOutput).values({
-    formData: JSON.stringify(formData),
-    templateSlug: slug,
-    aiResponse: cleanedText,
-    createdBy: createdBy,
-    createdAt: new Date().toISOString(),
-  });
+    const result = await db.insert(AiOutput).values({
+      formData: JSON.stringify(formData),
+      templateSlug: slug,
+      aiResponse: cleanedText,
+      createdBy: createdBy,
+      createdAt: new Date().toISOString(),
+    });
 
-  return cleanedText;
+    return cleanedText;
+  } catch (error) {
+    console.error("Error in generateAIContent:", error);
+    throw error;
+  }
 }

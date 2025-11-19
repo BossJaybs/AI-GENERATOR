@@ -5,10 +5,6 @@ const {
 } = require("@google/generative-ai");
 const OpenAI = require('openai');
 
-const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-const genAI = new GoogleGenerativeAI(apiKey);
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
 const PRIMARY_MODEL = process.env.NEXT_PUBLIC_PRIMARY_MODEL || "gemini-2.0-flash-001";
 const FALLBACK_MODEL = process.env.NEXT_PUBLIC_FALLBACK_MODEL || "gpt-3.5-turbo";
 
@@ -21,13 +17,13 @@ const generationConfig = {
 };
 
 function getModel(modelName: string) {
+  const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("NEXT_PUBLIC_GEMINI_API_KEY is not set");
+  }
+  const genAI = new GoogleGenerativeAI(apiKey);
   return genAI.getGenerativeModel({ model: modelName });
 }
-
-export const chatSession = getModel(PRIMARY_MODEL).startChat({
-  generationConfig,
-  history: [],
-});
 
 function sleep(ms: number) {
   return new Promise((res) => setTimeout(res, ms));
@@ -54,6 +50,11 @@ export async function sendWithRetry(prompt: string, options: { maxRetries?: numb
     try {
       if (modelName.startsWith('gpt-')) {
         // OpenAI
+        const apiKey = process.env.OPENAI_API_KEY;
+        if (!apiKey) {
+          throw new Error("OPENAI_API_KEY is not set");
+        }
+        const openai = new OpenAI({ apiKey });
         const res = await openai.chat.completions.create({
           model: modelName,
           messages: [{ role: 'user', content: prompt }],
