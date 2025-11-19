@@ -8,7 +8,7 @@ const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey);
 
 const PRIMARY_MODEL = process.env.NEXT_PUBLIC_PRIMARY_MODEL || "gemini-2.0-flash-001";
-const FALLBACK_MODEL = process.env.NEXT_PUBLIC_FALLBACK_MODEL || "gemini-1.5-flash";
+const FALLBACK_MODEL = process.env.NEXT_PUBLIC_FALLBACK_MODEL || "gemini-1.5-pro";
 
 const generationConfig = {
   temperature: 1,
@@ -90,8 +90,11 @@ export async function sendWithRetry(prompt: string, options: { maxRetries?: numb
   }
 
   const isRateLimit = String(lastErr?.message || lastErr).includes('429');
+  const isQuotaExceeded = String(lastErr?.message || lastErr).toLowerCase().includes('quota');
   const friendly = new Error(
-    isRateLimit
+    isQuotaExceeded
+      ? "Quota exceeded. Please check your Google AI billing and try again."
+      : isRateLimit
       ? "Rate limit exceeded. Please try again later."
       : "The AI service is temporarily overloaded. Please try again in a moment."
   );
