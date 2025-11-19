@@ -44,12 +44,8 @@ export async function generateAIContent(formData: any, selectedPrompt: string, s
     console.log('Actions: Starting generateAIContent for slug:', slug);
     const finalPrompt = `${selectedPrompt}\n\nUser Input JSON:\n${JSON.stringify(formData)}`;
 
-    const text = await sendWithRetry(finalPrompt, {
-      maxRetries: 3,
-      baseDelayMs: 800,
-      timeoutMs: 30000,
-      useFallback: true,
-    });
+    // Temporarily disabled AI call for testing - using dummy response
+    const text = "Dummy AI response for testing purposes. Form submission and database save should work.";
 
     const cleanedText = stripRtf(text);
     console.log('Actions: AI response received, length:', cleanedText.length);
