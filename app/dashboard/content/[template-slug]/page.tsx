@@ -7,46 +7,10 @@ import Templates from '@/app/(data)/Templates'
 import { ArrowLeft} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { chatSession, sendWithRetry } from '@/utils/AiModel'
-import { db } from '@/utils/db'
-import { AiOutput } from '@/utils/schema'
 import { useUser } from '@clerk/nextjs'
 import { TotalUsageContext } from '@/app/(context)/TotalUsageContext'
+import { generateAIContent } from '@/utils/actions'
 
-function stripRtf(text: string): string {
-  // Remove RTF formatting if present
-  if (text.startsWith('{\\rtf')) {
-    // Find the last closing brace
-    let braceCount = 0;
-    let endIndex = -1;
-    for (let i = 0; i < text.length; i++) {
-      if (text[i] === '{') braceCount++;
-      else if (text[i] === '}') {
-        braceCount--;
-        if (braceCount === 0) {
-          endIndex = i;
-          break;
-        }
-      }
-    }
-    if (endIndex !== -1) {
-      // Extract content after the RTF header
-      const rtfContent = text.substring(text.indexOf('\\viewkind'), endIndex);
-      // Simple RTF to text conversion - remove RTF control words
-      return rtfContent
-        .replace(/\\[a-z]+\d*\s?/g, '') // Remove RTF control words
-        .replace(/\\\n/g, '\n') // Handle line breaks
-        .replace(/\\par/g, '\n') // Paragraph breaks
-        .replace(/\\tab/g, '\t') // Tabs
-        .replace(/\{\\fonttbl[^}]*\}/g, '') // Remove font table
-        .replace(/\{\\colortbl[^}]*\}/g, '') // Remove color table
-        .replace(/\\[a-z]+/g, '') // Remove remaining control words
-        .replace(/\n\s*\n/g, '\n\n') // Clean up extra newlines
-        .trim();
-    }
-  }
-  return text;
-}
 interface PROPS{
   params: Promise<{
     'template-slug':string
@@ -70,21 +34,9 @@ function CreateNewContent(props:PROPS) {
       setLoading(true);
       try {
         const selectedPrompt = selectedtemplate?.aiPrompt || '';
-        const finalPrompt = `${selectedPrompt}\n\nUser Input JSON:\n${JSON.stringify(formData)}`;
-
-        const text = await sendWithRetry(finalPrompt, {
-          maxRetries: 3,
-          baseDelayMs: 800,
-          timeoutMs: 30000,
-          useFallback: true,
-        });
-
-        const cleanedText = stripRtf(text);
+        const cleanedText = await generateAIContent(formData, selectedPrompt, selectedtemplate?.slug || '', user?.primaryEmailAddress?.emailAddress || '');
         console.log(cleanedText);
         setAiOutput(cleanedText);
-        if (cleanedText) {
-          await SaveInDb(JSON.stringify(formData), selectedtemplate?.slug, cleanedText);
-        }
       } catch (err: any) {
         console.error('AI generate error:', err);
         alert(err?.message || 'The AI service is temporarily unavailable. Please try again later.');
@@ -94,27 +46,6 @@ function CreateNewContent(props:PROPS) {
     }
   };
 
-  const SaveInDb = async (formData: string, slug: string | undefined, aiResp: string) => {
-    if (!slug) {
-      console.error("Template slug is undefined");
-      return;
-    }
-    
-    const createdBy = user?.primaryEmailAddress?.emailAddress;
-    if (!createdBy) {
-      console.error("User email is undefined");
-      return;
-    }
-
-    const result = await db.insert(AiOutput).values({
-      formData: formData,
-      templateSlug: slug,
-      aiResponse: aiResp,
-      createdBy: createdBy,
-      createdAt: new Date().toISOString(),
-    });
-    console.log(result)
-  }
   return (
     <div className='p-10'>
       <Link href={"/dashboard"}>
