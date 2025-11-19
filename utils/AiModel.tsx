@@ -1,9 +1,5 @@
-const {
-  GoogleGenerativeAI,
-  HarmCategory,
-  HarmBlockThreshold,
-} = require("@google/generative-ai");
-const OpenAI = require('openai');
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import OpenAI from 'openai';
 
 const PRIMARY_MODEL = process.env.NEXT_PUBLIC_PRIMARY_MODEL || "gemini-2.0-flash-001";
 const FALLBACK_MODEL = process.env.NEXT_PUBLIC_FALLBACK_MODEL || "gpt-3.5-turbo";
@@ -18,6 +14,7 @@ const generationConfig = {
 
 function getModel(modelName: string) {
   const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+  console.log('AiModel: NEXT_PUBLIC_GEMINI_API_KEY is set:', !!apiKey);
   if (!apiKey) {
     throw new Error("NEXT_PUBLIC_GEMINI_API_KEY is not set");
   }
@@ -43,6 +40,13 @@ export async function sendWithRetry(prompt: string, options: { maxRetries?: numb
     useFallback = true,
   } = options;
 
+  if (!process.env.NEXT_PUBLIC_GEMINI_API_KEY) {
+    throw new Error("NEXT_PUBLIC_GEMINI_API_KEY is not set");
+  }
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error("OPENAI_API_KEY is not set");
+  }
+
   async function attemptSend(modelName: string) {
     // Per-call timeout using AbortController
     const controller = new AbortController();
@@ -51,6 +55,7 @@ export async function sendWithRetry(prompt: string, options: { maxRetries?: numb
       if (modelName.startsWith('gpt-')) {
         // OpenAI
         const apiKey = process.env.OPENAI_API_KEY;
+        console.log('AiModel: OPENAI_API_KEY is set:', !!apiKey);
         if (!apiKey) {
           throw new Error("OPENAI_API_KEY is not set");
         }
@@ -66,7 +71,7 @@ export async function sendWithRetry(prompt: string, options: { maxRetries?: numb
       } else {
         // Gemini
         const session = getModel(modelName).startChat({ generationConfig, history: [] });
-        const res = await session.sendMessage(prompt, { signal: controller.signal });
+        const res = await session.sendMessage(prompt);
         const text = res?.response?.text?.() ?? "";
         if (!text) throw new Error("Empty response from model");
         return text;
