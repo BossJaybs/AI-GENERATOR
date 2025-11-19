@@ -67,8 +67,8 @@ export async function sendWithRetry(prompt: string, options: { maxRetries?: numb
       return await attemptSend(PRIMARY_MODEL);
     } catch (err) {
       lastErr = err;
-      if (attempt === maxRetries || !isRetryableError(err)) break;
       console.log(`Retry attempt ${attempt + 1} failed:`, err);
+      if (attempt === maxRetries || !isRetryableError(err)) break;
       const jitter = Math.random() * 0.4 + 0.8; // 0.8x - 1.2x
       const delay = Math.round(baseDelayMs * Math.pow(2, attempt) * jitter);
       await sleep(delay);
