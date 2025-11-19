@@ -34,9 +34,9 @@ function isRetryableError(err: any) {
 
 export async function sendWithRetry(prompt: string, options: { maxRetries?: number; baseDelayMs?: number; timeoutMs?: number; useFallback?: boolean } = {}) {
   const {
-    maxRetries = 5,
+    maxRetries = 2,
     baseDelayMs = 1000,
-    timeoutMs = 60000,
+    timeoutMs = 5000,
     useFallback = true,
   } = options;
 
@@ -82,6 +82,7 @@ export async function sendWithRetry(prompt: string, options: { maxRetries?: numb
   }
 
   let lastErr: any;
+  const fallbackMaxRetries = 1;
   // Try primary with retries
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
@@ -98,12 +99,12 @@ export async function sendWithRetry(prompt: string, options: { maxRetries?: numb
 
   // Fallback model if allowed and retryable
   if (useFallback) {
-    for (let attempt = 0; attempt <= 1; attempt++) {
+    for (let attempt = 0; attempt <= fallbackMaxRetries; attempt++) {
       try {
         return await attemptSend(FALLBACK_MODEL);
       } catch (err) {
         lastErr = err;
-        if (!isRetryableError(err)) break;
+        if (attempt === fallbackMaxRetries || !isRetryableError(err)) break;
         console.log(`Fallback retry attempt ${attempt + 1} failed:`, err);
         await sleep(baseDelayMs);
       }
