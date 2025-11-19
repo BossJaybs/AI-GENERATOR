@@ -16,6 +16,7 @@ function getModel(modelName: string) {
   const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
   console.log('AiModel: NEXT_PUBLIC_GEMINI_API_KEY is set:', !!apiKey);
   if (!apiKey) {
+    console.error('AiModel: NEXT_PUBLIC_GEMINI_API_KEY is not set, Gemini model calls will fail');
     throw new Error("NEXT_PUBLIC_GEMINI_API_KEY is not set");
   }
   const genAI = new GoogleGenerativeAI(apiKey);
@@ -41,9 +42,11 @@ export async function sendWithRetry(prompt: string, options: { maxRetries?: numb
   } = options;
 
   if (!process.env.NEXT_PUBLIC_GEMINI_API_KEY) {
+    console.error('AiModel: NEXT_PUBLIC_GEMINI_API_KEY is not set, primary model calls will fail');
     throw new Error("NEXT_PUBLIC_GEMINI_API_KEY is not set");
   }
   if (!process.env.OPENAI_API_KEY) {
+    console.error('AiModel: OPENAI_API_KEY is not set, fallback model calls will fail');
     throw new Error("OPENAI_API_KEY is not set");
   }
 
